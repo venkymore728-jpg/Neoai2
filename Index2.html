@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050510">
+<title>NEON AI • Daily Schedule</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  color: #fff;
+  font-family: Inter, sans-serif;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0,255,255,.15), transparent 30%),
+    radial-gradient(circle at 85% 75%, rgba(170,0,255,.18), transparent 35%),
+    #050510;
+  overflow-x: hidden;
+}
+
+/* Animated background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,255,.035) 1px, transparent 1px);
+  background-size: 45px 45px;
+  animation: gridMove 12s linear infinite;
+  z-index: -2;
+}
+
+@keyframes gridMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(45px); }
+}
+
+.container {
+  width: min(1100px, 94%);
+  margin: auto;
+  padding: 25px 0 50px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: 25px 10px 30px;
+}
+
+.logo {
+  font-family: Orbitron, sans-serif;
+  font-size: clamp(26px, 6vw, 48px);
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #00ffff, #8c5cff, #ff39e6);
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow {
+  from { filter: drop-shadow(0 0 4px #00ffff); }
+  to { filter: drop-shadow(0 0 18px #ff39e6); }
+}
+
+.subtitle {
+  color: #8e91b5;
+  margin-top: 8px;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+
+/* Clock */
+.clock-card {
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
+  border: 1px solid rgba(0,255,255,.3);
+  border-radius: 25px;
+  background: rgba(10,10,30,.72);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 30px rgba(0,255,255,.08),
+    inset 0 0 30px rgba(100,0,255,.05);
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.clock {
+  font-family: Orbitron, sans-serif;
+  font-size: clamp(34px, 9vw, 70px);
+  letter-spacing: 3px;
+  text-shadow: 0 0 15px #00ffff;
+}
+
+.date {
+  margin-top: 8px;
+  color: #a7aac8;
+}
+
+/* Current session */
+.current {
+  margin-top: 22px;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(0,255,255,.05);
+  border: 1px solid rgba(0,255,255,.18);
+}
+
+.current-label {
+  color: #00ffff;
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+
+.current-title {
+  font-family: Orbitron;
+  font-size: 24px;
+  margin-top: 8px;
+}
+
+.countdown {
+  color: #ff5ce1;
+  margin-top: 7px;
+  font-family: Orbitron;
+}
+
+/* Progress */
+.progress-container {
+  height: 7px;
+  background: #15152b;
+  border-radius: 20px;
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  width: 0%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #00ffff, #a855ff, #ff39e6);
+  box-shadow: 0 0 15px #00ffff;
+  transition: width .8s ease;
+}
+
+/* Schedule */
+.section-title {
+  font-family: Orbitron;
+  letter-spacing: 2px;
+  font-size: 18px;
+  margin: 35px 0 15px;
+}
+
+.schedule {
+  display: grid;
+  gap: 13px;
+}
+
+.session {
+  position: relative;
+  display: grid;
+  grid-template-columns: 115px 1fr auto;
+  gap: 15px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(12,12,32,.75);
+  border: 1px solid rgba(255,255,255,.08);
+  transition: .3s;
+  overflow: hidden;
+}
+
+.session::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #00ffff;
+  box-shadow: 0 0 14px #00ffff;
+}
+
+.session:hover {
+  transform: translateX(5px);
+  border-color: rgba(0,255,255,.35);
+  box-shadow: 0 0 25px rgba(0,255,255,.08);
+}
+
+.session.active {
+  border-color: #00ffff;
+  box-shadow:
+    0 0 20px rgba(0,255,255,.15),
+    inset 0 0 20px rgba(0,255,255,.04);
+  transform: scale(1.015);
+}
+
+.session.done {
+  opacity: .55;
+}
+
+.time {
+  font-family: Orbitron;
+  color: #00ffff;
+  font-size: 13px;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.type {
+  color: #8588a8;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.status {
+  font-size: 11px;
+  color: #8588a8;
+}
+
+.active .status {
+  color: #00ffff;
+}
+
+/* Controls */
+.controls {
+  margin-top: 30px;
+  padding: 22px;
+  border-radius: 22px;
+  background: rgba(10,10,30,.75);
+  border: 1px solid rgba(140,92,255,.25);
+}
+
+.controls h2 {
+  font-family: Orbitron;
+  font-size: 17px;
+  margin-bottom: 18px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+button,
+.file-label {
+  border: 1px solid rgba(0,255,255,.35);
+  background: rgba(0,255,255,.06);
+  color: #fff;
+  padding: 12px 17px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: .25s;
+}
+
+button:hover,
+.file-label:hover {
+  background: rgba(0,255,255,.15);
+  box-shadow: 0 0 18px rgba(0,255,255,.2);
+  transform: translateY(-2px);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.sound-name {
+  color: #8e91b5;
+  font-size: 12px;
+  margin-top: 13px;
+}
+
+/* AI assistant */
+.ai-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  background: linear-gradient(
+    120deg,
+    rgba(0,255,255,.06),
+    rgba(150,50,255,.08)
+  );
+  border: 1px solid rgba(150,100,255,.2);
+}
+
+.ai-title {
+  font-family: Orbitron;
+  color: #bca7ff;
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+
+.ai-message {
+  color: #c9c9df;
+  margin-top: 9px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* Alarm overlay */
+.alarm-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0,0,10,.82);
+  backdrop-filter: blur(12px);
+  z-index: 999;
+}
+
+.alarm-overlay.show {
+  display: grid;
+  animation: fadeIn .3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.alarm-box {
+  width: min(430px, 90%);
+  text-align: center;
+  padding: 40px 25px;
+  border-radius: 28px;
+  border: 1px solid #00ffff;
+  background: #09091b;
+  box-shadow: 0 0 70px rgba(0,255,255,.25);
+  animation: alarmPulse 1s infinite alternate;
+}
+
+@keyframes alarmPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.035); }
+}
+
+.alarm-icon {
+  font-size: 55px;
+}
+
+.alarm-box h2 {
+  font-family: Orbitron;
+  margin: 15px 0 8px;
+  color: #00ffff;
+}
+
+.alarm-box p {
+  color: #a8aac2;
+  margin-bottom: 20px;
+}
+
+.stop-btn {
+  background: rgba(255,50,170,.12);
+  border-color: #ff39e6;
+  box-shadow: 0 0 18px rgba(255,57,230,.15);
+}
+
+/* Mobile */
+@media(max-width:650px) {
+  .session {
+    grid-template-columns: 1fr auto;
+  }
+
+  .time {
+    grid-column: 1 / -1;
+  }
+
+  .status {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .name {
+    grid-column: 1;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="logo">NEON AI</div>
+  <div class="subtitle">PERSONAL DAILY PERFORMANCE SYSTEM</div>
+</header>
+
+<section class="clock-card">
+
+  <div class="clock" id="clock">00:00:00</div>
+  <div class="date" id="date">Loading...</div>
+
+  <div class="current">
+    <div class="current-label">CURRENT SESSION</div>
+    <div class="current-title" id="currentTitle">Loading...</div>
+    <div class="countdown" id="countdown">--:--:--</div>
+
+    <div class="progress-container">
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+</section>
+
+<div class="section-title">⚡ TODAY'S SYSTEM</div>
+
+<div class="schedule" id="schedule"></div>
+
+<section class="controls">
+
+  <h2>🔔 ALARM CONTROL</h2>
+
+  <div class="buttons">
+
+    <button onclick="testAlarm()">
+      🔊 Test Alarm
+    </button>
+
+    <button onclick="enableNotifications()">
+      🔔 Enable Notifications
+    </button>
+
+    <label class="file-label">
+      🎵 Change Ringtone
+      <input type="file" id="ringtoneInput" accept="audio/*">
+    </label>
+
+    <button onclick="resetRingtone()">
+      ↩ Default Ringtone
+    </button>
+
+  </div>
+
+  <div class="sound-name" id="soundName">
+    Default: baby-stop.mp3
+  </div>
+
+</section>
+
+<section class="ai-panel">
+
+  <div class="ai-title">◉ NEON AI STATUS</div>
+
+  <div class="ai-message" id="aiMessage">
+    System initialized. Your daily schedule is being monitored.
+  </div>
+
+</section>
+
+</div>
+
+<!-- Alarm -->
+<div class="alarm-overlay" id="alarmOverlay">
+
+  <div class="alarm-box">
+
+    <div class="alarm-icon">⏰</div>
+
+    <h2>SESSION CHANGE</h2>
+
+    <p id="alarmText">Your next session has started.</p>
+
+    <button class="stop-btn" onclick="stopAlarm()">
+      STOP ALARM
+    </button>
+
+  </div>
+
+</div>
+
+<audio id="alarmAudio" preload="auto" loop></audio>
+
+<script>
+
+/* =========================================================
+   DAILY SCHEDULE
+========================================================= */
+
+const schedule = [
+
+  {
+    start: "05:00",
+    end: "06:00",
+    title: "WORKOUT",
+    type: "Fitness • Energy"
+  },
+
+  {
+    start: "06:00",
+    end: "07:00",
+    title: "BATH + GET READY",
+    type: "Morning routine"
+  },
+
+  {
+    start: "07:00",
+    end: "10:00",
+    title: "STUDY SESSION 01",
+    type: "Deep Work"
+  },
+
+  {
+    start: "10:00",
+    end: "12:00",
+    title: "FREE TIME",
+    type: "Relax • Recharge"
+  },
+
+  {
+    start: "12:00",
+    end: "15:00",
+    title: "STUDY SESSION 02",
+    type: "Deep Work"
+  },
+
+  {
+    start: "15:00",
+    end: "17:00",
+    title: "FREE TIME",
+    type: "Relax • Recharge"
+  },
+
+  {
+    start: "17:00",
+    end: "20:00",
+    title: "STUDY SESSION 03",
+    type: "Deep Work"
+  },
+
+  {
+    start: "20:00",
+    end: "22:00",
+    title: "FREE TIME",
+    type: "Relax • Recharge"
+  },
+
+  {
+    start: "22:00",
+    end: "05:00",
+    title: "SLEEP",
+    type: "Recovery • 7 Hours"
+  }
+
+];
+
+
+/* =========================================================
+   DEFAULT RINGTONE
+========================================================= */
+
+const defaultRingtone = "baby-stop.mp3";
+
+const audio = document.getElementById("alarmAudio");
+
+let customRingtone = null;
+let alarmPlaying = false;
+
+try {
+  customRingtone = localStorage.getItem("customRingtone");
+} catch(e) {}
+
+if (customRingtone) {
+  audio.src = customRingtone;
+  document.getElementById("soundName").textContent =
+    "Custom ringtone selected";
+} else {
+  audio.src = defaultRingtone;
+}
+
+
+/* =========================================================
+   TIME FUNCTIONS
+========================================================= */
+
+function minutes(time) {
+
+  const [h,m] = time.split(":").map(Number);
+
+  return h * 60 + m;
+}
+
+
+function getCurrentMinutes(date) {
+
+  return date.getHours() * 60 + date.getMinutes();
+
+}
+
+
+function getCurrentSession(date) {
+
+  const now = getCurrentMinutes(date);
+
+  for (let i = 0; i < schedule.length; i++) {
+
+    const s = schedule[i];
+
+    const start = minutes(s.start);
+    const end = minutes(s.end);
+
+    // Normal session
+    if (start < end) {
+
+      if (now >= start && now < end) {
+        return i;
+      }
+
+    }
+
+    // Overnight session: 22:00 -> 05:00
+    else {
+
+      if (now >= start || now < end) {
+        return i;
+      }
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+function getEndDate(date, session) {
+
+  const end = minutes(session.end);
+
+  const result = new Date(date);
+
+  result.setHours(
+    Math.floor(end / 60),
+    end % 60,
+    0,
+    0
+  );
+
+  // Overnight 22:00 -> 05:00
+  if (end <= minutes(session.start)) {
+
+    if (getCurrentMinutes(date) >= minutes(session.start)) {
+
+      result.setDate(result.getDate() + 1);
+
+    }
+
+  }
+
+  return result;
+}
+
+
+/* =========================================================
+   RENDER SCHEDULE
+========================================================= */
+
+function renderSchedule(activeIndex) {
+
+  const container = document.getElementById("schedule");
+
+  container.innerHTML = "";
+
+  schedule.forEach((item,index) => {
+
+    const card = document.createElement("div");
+
+    card.className = "session";
+
+    if (index === activeIndex) {
+      card.classList.add("active");
+    }
+
+    card.innerHTML = `
+
+      <div class="time">
+        ${item.start} → ${item.end}
+      </div>
+
+      <div>
+        <div class="name">${item.title}</div>
+        <div class="type">${item.type}</div>
+      </div>
+
+      <div class="status">
+        ${index === activeIndex ? "● ACTIVE" : "○"}
+      </div>
+
+    `;
+
+    container.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+let previousSession = null;
+
+function updateClock() {
+
+  const now = new Date();
+
+  const activeIndex = getCurrentSession(now);
+
+  const active = schedule[activeIndex];
+
+  const endDate = getEndDate(now,active);
+
+  const remaining = Math.max(
+    0,
+    endDate - now
+  );
+
+  const hours = Math.floor(
+    remaining / 3600000
+  );
+
+  const minutesLeft = Math.floor(
+    (remaining % 3600000) / 60000
+  );
+
+  const seconds = Math.floor(
+    (remaining % 60000) / 1000
+  );
+
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString();
+
+  document.getElementById("date").textContent =
+    now.toLocaleDateString(
+      undefined,
+      {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      }
+    );
+
+  document.getElementById("currentTitle").textContent =
+    active.title;
+
+  document.getElementById("countdown").textContent =
+    `${String(hours).padStart(2,"0")}:` +
+    `${String(minutesLeft).padStart(2,"0")}:` +
+    `${String(seconds).padStart(2,"0")} remaining`;
+
+  // Progress
+  const startMinutes = minutes(active.start);
+
+  let startDate = new Date(now);
+
+  startDate.setHours(
+    Math.floor(startMinutes / 60),
+    startMinutes % 60,
+    0,
+    0
+  );
+
+  // Overnight session
+  if (active.start === "22:00") {
+
+    if (now.getHours() < 5) {
+      startDate.setDate(
+        startDate.getDate() - 1
+      );
+    }
+
+  }
+
+  const total =
+    endDate - startDate;
+
+  const elapsed =
+    now - startDate;
+
+  const percent =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        elapsed / total * 100
+      )
+    );
+
+  document.getElementById("progress").style.width =
+    percent + "%";
+
+
+  // Session changed
+  if (
+    previousSession !== null &&
+    previousSession !== activeIndex
+  ) {
+
+    triggerAlarm(active);
+
+  }
+
+  previousSession = activeIndex;
+
+  renderSchedule(activeIndex);
+
+  updateAI(activeIndex);
+
+}
+
+
+/* =========================================================
+   AI STATUS MESSAGE
+========================================================= */
+
+function updateAI(index) {
+
+  const messages = [
+
+    "Workout mode active. Start the day with energy and consistency.",
+
+    "Morning preparation detected. Get ready for the first deep-work block.",
+
+    "Deep Work mode activated. Remove distractions and focus.",
+
+    "Recharge window active. Relax without losing control of your schedule.",
+
+    "Second study block active. Keep your momentum strong.",
+
+    "Recovery window active. Give your brain a proper break.",
+
+    "Final study block active. Finish the day with disciplined focus.",
+
+    "Evening free time active. Prepare your mind for recovery.",
+
+    "Sleep mode active. Your next mission starts at 05:00."
+  ];
+
+  document.getElementById("aiMessage").textContent =
+    messages[index];
+
+}
+
+
+/* =========================================================
+   ALARM
+========================================================= */
+
+function triggerAlarm(session) {
+
+  alarmPlaying = true;
+
+  document.getElementById("alarmText").textContent =
+    `${session.title} has started.`;
+
+  document.getElementById("alarmOverlay")
+    .classList.add("show");
+
+  playAlarm();
+
+}
+
+
+function playAlarm() {
+
+  audio.currentTime = 0;
+
+  audio.play().catch(() => {
+
+    console.log(
+      "Browser blocked automatic audio. Tap Test Alarm once to enable sound."
+    );
+
+  });
+
+}
+
+
+function stopAlarm() {
+
+  alarmPlaying = false;
+
+  audio.pause();
+
+  audio.currentTime = 0;
+
+  document.getElementById("alarmOverlay")
+    .classList.remove("show");
+
+}
+
+
+function testAlarm() {
+
+  document.getElementById("alarmOverlay")
+    .classList.add("show");
+
+  document.getElementById("alarmText").textContent =
+    "This is a ringtone test.";
+
+  playAlarm();
+
+}
+
+
+/* =========================================================
+   RINGTONE UPLOAD
+========================================================= */
+
+document.getElementById("ringtoneInput")
+.addEventListener("change", function(e) {
+
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+
+    const data = event.target.result;
+
+    audio.src = data;
+
+    try {
+      localStorage.setItem(
+        "customRingtone",
+        data
+      );
+    } catch(error) {
+
+      console.log(
+        "Large audio file cannot be stored in localStorage."
+      );
+
+    }
+
+    document.getElementById("soundName")
+      .textContent =
+      "Custom: " + file.name;
+
+    testAlarm();
+
+  };
+
+  reader.readAsDataURL(file);
+
+});
+
+
+function resetRingtone() {
+
+  try {
+    localStorage.removeItem(
+      "customRingtone"
+    );
+  } catch(e) {}
+
+  audio.src = defaultRingtone;
+
+  document.getElementById("soundName")
+    .textContent =
+    "Default: baby-stop.mp3";
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+async function enableNotifications() {
+
+  if (!("Notification" in window)) {
+
+    alert(
+      "Notifications are not supported by this browser."
+    );
+
+    return;
+
+  }
+
+  const permission =
+    await Notification.requestPermission();
+
+  if (permission === "granted") {
+
+    new Notification(
+      "NEON AI",
+      {
+        body:
+          "Schedule alarms are enabled."
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+updateClock();
+
+setInterval(
+  updateClock,
+  1000
+);
+
+
+/*
+  Prevent accidental page reload from
+  killing the currently playing alarm.
+*/
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+    audio.pause();
+  }
+);
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+  </html>
